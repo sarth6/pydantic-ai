@@ -158,7 +158,7 @@ class TestAnthropicUnifiedThinking:
     def test_thinking_true_adaptive_model(self):
         """thinking=True on adaptive model → type: adaptive."""
         model = AnthropicModel.__new__(AnthropicModel)
-        model._model_name = 'claude-sonnet-4-5'
+        model._model_name = 'claude-sonnet-4-6'
         model._profile = AnthropicModelProfile(supports_thinking=True, anthropic_supports_adaptive_thinking=True)
 
         settings: AnthropicModelSettings = {'thinking': True}
@@ -195,7 +195,7 @@ class TestAnthropicUnifiedThinking:
     def test_effort_on_adaptive_model_returns_adaptive(self):
         """thinking_effort on adaptive model → type: adaptive (effort flows through output_config)."""
         model = AnthropicModel.__new__(AnthropicModel)
-        model._model_name = 'claude-opus-4-5'
+        model._model_name = 'claude-opus-4-6'
         model._profile = AnthropicModelProfile(supports_thinking=True, anthropic_supports_adaptive_thinking=True)
 
         settings: AnthropicModelSettings = {'thinking_effort': 'high'}
@@ -224,7 +224,7 @@ class TestAnthropicUnifiedThinking:
     def test_prepare_request_adaptive_effort_passthrough(self):
         """prepare_request() maps thinking_effort → anthropic_effort for adaptive models."""
         model = AnthropicModel.__new__(AnthropicModel)
-        model._model_name = 'claude-sonnet-4-5'
+        model._model_name = 'claude-sonnet-4-6'
         model._profile = AnthropicModelProfile(supports_thinking=True, anthropic_supports_adaptive_thinking=True)
         model._settings = None
 
@@ -1805,7 +1805,7 @@ class TestAnthropicIntegration:
 
     @pytest.mark.anyio
     async def test_thinking_enabled_adaptive_model(self, allow_model_requests: None):
-        """thinking=True on Opus 4.5+ → adaptive thinking."""
+        """thinking=True on Opus 4.6 → adaptive thinking."""
         from tests.models.test_anthropic import MockAnthropic, completion_message, get_mock_chat_completion_kwargs
 
         c = completion_message(
@@ -1813,7 +1813,7 @@ class TestAnthropicIntegration:
             BetaUsage(input_tokens=5, output_tokens=10),
         )
         mock_client = MockAnthropic.create_mock(c)
-        m = AnthropicModel('claude-opus-4-5', provider=AnthropicProvider(anthropic_client=mock_client))
+        m = AnthropicModel('claude-opus-4-6', provider=AnthropicProvider(anthropic_client=mock_client))
         agent = Agent(m)
 
         result = await agent.run(

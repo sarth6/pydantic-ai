@@ -34,13 +34,10 @@ _THINKING_MODELS = (
 )
 
 # Models that support adaptive thinking (type: "adaptive" with output_config.effort).
-# Older thinking models use type: "enabled" with budget_tokens.
+# Only Opus 4.6 and Sonnet 4.6 support this; older models use type: "enabled" with budget_tokens.
 _ADAPTIVE_THINKING_MODELS = (
-    'claude-opus-4-5',
     'claude-opus-4-6',
-    'claude-sonnet-4-5',
     'claude-sonnet-4-6',
-    'claude-haiku-4-5',
 )
 
 

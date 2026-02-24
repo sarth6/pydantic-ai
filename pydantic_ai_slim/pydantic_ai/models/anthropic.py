@@ -316,11 +316,11 @@ class AnthropicModel(Model):
         if not resolved.enabled:
             return {'type': 'disabled'}
 
-        # Adaptive models (Claude 4.5+): effort flows through output_config, not thinking config
+        # Adaptive models (Opus 4.6, Sonnet 4.6): effort flows through output_config, not thinking config
         if AnthropicModelProfile.from_profile(self.profile).anthropic_supports_adaptive_thinking:
             return {'type': 'adaptive'}
 
-        # Budget-based models (Claude 3.7, Sonnet 4, Opus 4): map effort to budget_tokens
+        # Budget-based models (3.7, Sonnet 4/4.5, Opus 4/4.1/4.5, Haiku 4.5): map effort to budget_tokens
         budget = _DEFAULT_THINKING_BUDGET
         if resolved.effort:
             budget = _EFFORT_TO_BUDGET.get(resolved.effort, _DEFAULT_THINKING_BUDGET)

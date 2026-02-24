@@ -191,7 +191,7 @@ agent = Agent(model, model_settings=settings)
 
 ## Bedrock
 
-Although Bedrock Converse doesn't provide a unified API to enable thinking, you can still use [`BedrockModelSettings.bedrock_additional_model_requests_fields`][pydantic_ai.models.bedrock.BedrockModelSettings.bedrock_additional_model_requests_fields] [model setting](agent.md#model-run-settings) to pass provider-specific configuration:
+Bedrock supports thinking for Claude, DeepSeek R1, and Amazon Nova models via the [unified API](#unified-thinking-api). For fine-grained control, you can also use [`BedrockModelSettings.bedrock_additional_model_requests_fields`][pydantic_ai.models.bedrock.BedrockModelSettings.bedrock_additional_model_requests_fields] [model setting](agent.md#model-run-settings) to pass provider-specific configuration directly:
 
 === "Claude"
 

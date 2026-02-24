@@ -49,7 +49,7 @@ from ..profiles import ModelProfileSpec
 from ..profiles.google import GoogleModelProfile
 from ..providers import Provider, infer_provider
 from ..settings import ModelSettings
-from ..thinking import _resolve_thinking_config  # pyright: ignore[reportPrivateUsage]
+from ..thinking import resolve_thinking_config
 from ..tools import ToolDefinition
 from . import (
     Model,
@@ -297,7 +297,7 @@ class GoogleModel(Model):
 
         Uses silent-drop semantics for unsupported settings.
         """
-        resolved = _resolve_thinking_config(model_settings, self.profile)
+        resolved = resolve_thinking_config(model_settings, self.profile)
         if resolved is None:
             return None
 

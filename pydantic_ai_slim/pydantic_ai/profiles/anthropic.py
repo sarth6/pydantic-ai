@@ -6,12 +6,12 @@ from . import ModelProfile
 
 # Effort-to-budget mapping for Anthropic-style models (Claude on Anthropic and Bedrock).
 # Budget-based thinking uses a token budget instead of effort levels.
-_EFFORT_TO_BUDGET: dict[str, int] = {
+EFFORT_TO_BUDGET: dict[str, int] = {
     'low': 1024,
     'medium': 4096,
     'high': 16384,
 }
-_DEFAULT_THINKING_BUDGET = 4096
+DEFAULT_THINKING_BUDGET = 4096
 
 
 @dataclass(kw_only=True)

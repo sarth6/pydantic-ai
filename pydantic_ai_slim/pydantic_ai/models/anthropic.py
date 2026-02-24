@@ -46,14 +46,14 @@ from ..messages import (
 )
 from ..profiles import ModelProfileSpec
 from ..profiles.anthropic import (
-    _DEFAULT_THINKING_BUDGET,  # pyright: ignore[reportPrivateUsage]
-    _EFFORT_TO_BUDGET,  # pyright: ignore[reportPrivateUsage]
+    DEFAULT_THINKING_BUDGET,
+    EFFORT_TO_BUDGET,
     AnthropicModelProfile,
 )
 from ..providers import Provider, infer_provider
 from ..providers.anthropic import AsyncAnthropicClient
 from ..settings import ModelSettings, merge_model_settings
-from ..thinking import _resolve_thinking_config  # pyright: ignore[reportPrivateUsage]
+from ..thinking import resolve_thinking_config
 from ..tools import ToolDefinition
 from . import Model, ModelRequestParameters, StreamedResponse, check_allow_model_requests, download_item, get_user_agent
 
@@ -309,7 +309,7 @@ class AnthropicModel(Model):
 
         Uses silent-drop semantics for unsupported settings.
         """
-        resolved = _resolve_thinking_config(model_settings, self.profile)
+        resolved = resolve_thinking_config(model_settings, self.profile)
         if resolved is None:
             return None
 
@@ -321,9 +321,9 @@ class AnthropicModel(Model):
             return {'type': 'adaptive'}
 
         # Budget-based models (3.7, Sonnet 4/4.5, Opus 4/4.1/4.5, Haiku 4.5): map effort to budget_tokens
-        budget = _DEFAULT_THINKING_BUDGET
+        budget = DEFAULT_THINKING_BUDGET
         if resolved.effort:
-            budget = _EFFORT_TO_BUDGET.get(resolved.effort, _DEFAULT_THINKING_BUDGET)
+            budget = EFFORT_TO_BUDGET.get(resolved.effort, DEFAULT_THINKING_BUDGET)
         return {'type': 'enabled', 'budget_tokens': budget}
 
     async def request(

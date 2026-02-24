@@ -10,7 +10,7 @@ from typing_extensions import override
 from ..profiles import ModelProfileSpec
 from ..providers import Provider
 from ..settings import ModelSettings
-from ..thinking import _resolve_thinking_config  # pyright: ignore[reportPrivateUsage]
+from ..thinking import resolve_thinking_config
 from . import ModelRequestParameters
 
 try:
@@ -113,7 +113,7 @@ class CerebrasModel(OpenAIChatModel):
         Returns True to disable reasoning, None to leave default behavior.
         Uses silent-drop semantics: effort is silently ignored (Cerebras has no effort control).
         """
-        resolved = _resolve_thinking_config(model_settings, self.profile)
+        resolved = resolve_thinking_config(model_settings, self.profile)
         if resolved is None:
             return None
 

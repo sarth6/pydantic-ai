@@ -1,7 +1,7 @@
 """Centralized thinking configuration resolution.
 
 This module provides the single source of truth for normalizing unified thinking
-settings into a canonical `_ResolvedThinkingConfig`. Provider-specific formatting
+settings into a canonical `ResolvedThinkingConfig`. Provider-specific formatting
 is done in each model class.
 """
 
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class _ResolvedThinkingConfig:
+class ResolvedThinkingConfig:
     """Normalized thinking configuration after input parsing."""
 
     enabled: bool
@@ -26,10 +26,10 @@ class _ResolvedThinkingConfig:
     """Effort level for thinking depth."""
 
 
-def _resolve_thinking_config(  # pyright: ignore[reportUnusedFunction]
+def resolve_thinking_config(
     model_settings: ModelSettings,
     profile: ModelProfile | None = None,
-) -> _ResolvedThinkingConfig | None:
+) -> ResolvedThinkingConfig | None:
     """Normalize unified thinking settings, optionally guarding against profile capabilities.
 
     Returns None if no thinking settings are specified or if the model doesn't support thinking.
@@ -57,7 +57,7 @@ def _resolve_thinking_config(  # pyright: ignore[reportUnusedFunction]
 
     # thinking=False -> disabled (effort ignored per precedence rule 2)
     if thinking is False:
-        return _ResolvedThinkingConfig(enabled=False)
+        return ResolvedThinkingConfig(enabled=False)
 
     # thinking=True or effort set (implicit enable, precedence rule 3)
-    return _ResolvedThinkingConfig(enabled=True, effort=effort)
+    return ResolvedThinkingConfig(enabled=True, effort=effort)

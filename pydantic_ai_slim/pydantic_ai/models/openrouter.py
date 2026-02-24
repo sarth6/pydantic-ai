@@ -13,7 +13,7 @@ from ..profiles import ModelProfileSpec
 from ..providers import Provider
 from ..providers.openrouter import OpenRouterProvider
 from ..settings import ModelSettings
-from ..thinking import _resolve_thinking_config  # pyright: ignore[reportPrivateUsage]
+from ..thinking import resolve_thinking_config
 from . import ModelRequestParameters, download_item
 
 try:
@@ -579,11 +579,11 @@ class OpenRouterModel(OpenAIChatModel):
         """Resolve unified thinking settings to OpenRouter reasoning config.
 
         OpenRouter handles per-provider translation, so we pass effort through directly.
-        Uses `_resolve_thinking_config` without a profile intentionally:
+        Uses `resolve_thinking_config` without a profile intentionally:
         OpenRouter routes to many models and handles per-model capability detection
         server-side, so we skip profile-based guards and let OpenRouter decide.
         """
-        resolved = _resolve_thinking_config(model_settings)
+        resolved = resolve_thinking_config(model_settings)
         if resolved is None:
             return None
 

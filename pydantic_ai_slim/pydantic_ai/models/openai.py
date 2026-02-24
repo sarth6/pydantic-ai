@@ -60,7 +60,7 @@ from ..profiles import ModelProfile, ModelProfileSpec
 from ..profiles.openai import SAMPLING_PARAMS, OpenAIModelProfile, OpenAISystemPromptRole
 from ..providers import Provider, infer_provider
 from ..settings import ModelSettings
-from ..thinking import _resolve_thinking_config  # pyright: ignore[reportPrivateUsage]
+from ..thinking import resolve_thinking_config
 from ..tools import ToolDefinition
 from . import (
     Model,
@@ -595,7 +595,7 @@ class OpenAIChatModel(Model):
 
         Uses silent-drop semantics for unsupported settings.
         """
-        resolved = _resolve_thinking_config(model_settings, self.profile)
+        resolved = resolve_thinking_config(model_settings, self.profile)
         if resolved is None:
             return None
 
@@ -1422,7 +1422,7 @@ class OpenAIResponsesModel(Model):
 
         # Apply unified thinking config if no provider-specific setting
         if 'openai_reasoning_effort' not in merged_settings:
-            resolved = _resolve_thinking_config(merged_settings, self.profile)
+            resolved = resolve_thinking_config(merged_settings, self.profile)
             if resolved is not None and resolved.enabled:
                 merged_settings['openai_reasoning_effort'] = resolved.effort or 'medium'
 

@@ -2,7 +2,7 @@
 
 Tests the three-layer architecture:
 1. ModelSettings (user input): `thinking: bool` + `thinking_effort: Literal['low', 'medium', 'high']`
-2. _resolve_thinking_config() (pure normalization): no validation, no errors
+2. resolve_thinking_config() (pure normalization): no validation, no errors
 3. Model._resolve_*() (per-provider translation): silent-drop for unsupported settings
 
 Integration tests at the bottom verify the full Agent -> Model -> API client pipeline
@@ -69,70 +69,70 @@ def non_thinking_profile() -> ModelProfile:
 
 
 # ============================================================================
-# Core _resolve_thinking_config() tests
+# Core resolve_thinking_config() tests
 # ============================================================================
 
 
 class TestResolveThinkingConfig:
-    """Direct unit tests for pydantic_ai.thinking._resolve_thinking_config."""
+    """Direct unit tests for pydantic_ai.thinking.resolve_thinking_config."""
 
     def test_no_settings_returns_none(self):
         """No thinking fields set → None (provider uses defaults)."""
-        from pydantic_ai.thinking import _resolve_thinking_config
+        from pydantic_ai.thinking import resolve_thinking_config
 
-        result = _resolve_thinking_config({})
+        result = resolve_thinking_config({})
         assert result is None
 
     def test_thinking_true_enabled(self):
         """thinking=True → enabled=True, effort=None."""
-        from pydantic_ai.thinking import _resolve_thinking_config
+        from pydantic_ai.thinking import resolve_thinking_config
 
-        result = _resolve_thinking_config({'thinking': True})
+        result = resolve_thinking_config({'thinking': True})
         assert result is not None
         assert result.enabled is True
         assert result.effort is None
 
     def test_thinking_false_disabled(self):
         """thinking=False → enabled=False (effort ignored per precedence rule 2)."""
-        from pydantic_ai.thinking import _resolve_thinking_config
+        from pydantic_ai.thinking import resolve_thinking_config
 
-        result = _resolve_thinking_config({'thinking': False})
+        result = resolve_thinking_config({'thinking': False})
         assert result is not None
         assert result.enabled is False
 
     def test_effort_alone_implicit_enable(self):
         """thinking_effort without thinking → implicit enable (precedence rule 3)."""
-        from pydantic_ai.thinking import _resolve_thinking_config
+        from pydantic_ai.thinking import resolve_thinking_config
 
-        result = _resolve_thinking_config({'thinking_effort': 'high'})
+        result = resolve_thinking_config({'thinking_effort': 'high'})
         assert result is not None
         assert result.enabled is True
         assert result.effort == 'high'
 
     def test_thinking_true_with_effort(self):
         """thinking=True + thinking_effort → enabled with effort."""
-        from pydantic_ai.thinking import _resolve_thinking_config
+        from pydantic_ai.thinking import resolve_thinking_config
 
-        result = _resolve_thinking_config({'thinking': True, 'thinking_effort': 'low'})
+        result = resolve_thinking_config({'thinking': True, 'thinking_effort': 'low'})
         assert result is not None
         assert result.enabled is True
         assert result.effort == 'low'
 
     def test_thinking_false_ignores_effort(self):
         """thinking=False + thinking_effort → disabled (False overrides effort)."""
-        from pydantic_ai.thinking import _resolve_thinking_config
+        from pydantic_ai.thinking import resolve_thinking_config
 
-        result = _resolve_thinking_config({'thinking': False, 'thinking_effort': 'high'})
+        result = resolve_thinking_config({'thinking': False, 'thinking_effort': 'high'})
         assert result is not None
         assert result.enabled is False
         # Effort is not checked when disabled
 
     def test_thinking_false_always_on_returns_none(self):
         """thinking=False on always-on model → None (silent ignore)."""
-        from pydantic_ai.thinking import _resolve_thinking_config
+        from pydantic_ai.thinking import resolve_thinking_config
 
         profile = ModelProfile(supports_thinking=True, thinking_always_enabled=True)
-        result = _resolve_thinking_config({'thinking': False}, profile)
+        result = resolve_thinking_config({'thinking': False}, profile)
         assert result is None
 
 
@@ -1538,6 +1538,35 @@ class TestProfileThinkingCapabilities:
 
         # Titan models don't support reasoning
         profile = amazon_model_profile('titan-text-express')
+        assert profile is not None
+        assert profile.supports_thinking is False
+
+    def test_zai_profile_thinking_support(self):
+        """ZAI profiles correctly detect GLM reasoning models."""
+        from pydantic_ai.profiles.zai import zai_model_profile
+
+        # GLM models support reasoning
+        profile = zai_model_profile('glm-z1-airx')
+        assert profile is not None
+        assert profile.supports_thinking is True
+
+        # Non-GLM models don't support reasoning
+        profile = zai_model_profile('other-model')
+        assert profile is not None
+        assert profile.supports_thinking is False
+
+    def test_harmony_profile_thinking_support(self):
+        """Harmony profiles correctly detect GPT-OSS reasoning models."""
+        from pydantic_ai.profiles.harmony import harmony_model_profile
+
+        # GPT-OSS models: thinking always on
+        profile = harmony_model_profile('gpt-oss-120b-1')
+        assert profile is not None
+        assert profile.supports_thinking is True
+        assert profile.thinking_always_enabled is True
+
+        # Non-reasoning Harmony models (gpt-4o is recognized as non-reasoning by the OpenAI base profile)
+        profile = harmony_model_profile('gpt-4o')
         assert profile is not None
         assert profile.supports_thinking is False
 

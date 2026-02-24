@@ -51,7 +51,7 @@ from ..profiles import ModelProfileSpec
 from ..profiles.grok import GrokModelProfile
 from ..providers import Provider, infer_provider
 from ..settings import ModelSettings
-from ..thinking import _resolve_thinking_config  # pyright: ignore[reportPrivateUsage]
+from ..thinking import resolve_thinking_config
 from ..usage import RequestUsage
 
 try:
@@ -500,7 +500,7 @@ class XaiModel(Model):
         Maps: low→"low", medium→"low" (downmap), high→"high".
         Silent drop for all other models.
         """
-        resolved = _resolve_thinking_config(model_settings, self.profile)
+        resolved = resolve_thinking_config(model_settings, self.profile)
         if resolved is None:
             return None
 

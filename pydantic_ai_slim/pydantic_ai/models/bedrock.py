@@ -45,13 +45,13 @@ from pydantic_ai.builtin_tools import AbstractBuiltinTool, CodeExecutionTool
 from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError, UserError
 from pydantic_ai.models import Model, ModelRequestParameters, StreamedResponse, download_item
 from pydantic_ai.profiles.anthropic import (
-    _DEFAULT_THINKING_BUDGET,  # pyright: ignore[reportPrivateUsage]
-    _EFFORT_TO_BUDGET,  # pyright: ignore[reportPrivateUsage]
+    DEFAULT_THINKING_BUDGET,
+    EFFORT_TO_BUDGET,
 )
 from pydantic_ai.providers import Provider, infer_provider
 from pydantic_ai.providers.bedrock import BedrockModelProfile, remove_bedrock_geo_prefix
 from pydantic_ai.settings import ModelSettings
-from pydantic_ai.thinking import _resolve_thinking_config  # pyright: ignore[reportPrivateUsage]
+from pydantic_ai.thinking import resolve_thinking_config
 from pydantic_ai.tools import ToolDefinition
 
 if TYPE_CHECKING:
@@ -426,7 +426,7 @@ class BedrockConverseModel(Model):
         Both use additionalModelRequestFields.thinking with budget_tokens,
         but DeepSeek R1 has a lower recommended budget ceiling (8192 max).
         """
-        resolved = _resolve_thinking_config(model_settings, self.profile)
+        resolved = resolve_thinking_config(model_settings, self.profile)
         if resolved is None:
             return None
 
@@ -437,7 +437,7 @@ class BedrockConverseModel(Model):
         if 'deepseek' in self.model_name:
             effort_to_budget, default_budget = _DEEPSEEK_EFFORT_TO_BUDGET, _DEEPSEEK_DEFAULT_THINKING_BUDGET
         else:
-            effort_to_budget, default_budget = _EFFORT_TO_BUDGET, _DEFAULT_THINKING_BUDGET
+            effort_to_budget, default_budget = EFFORT_TO_BUDGET, DEFAULT_THINKING_BUDGET
 
         budget = effort_to_budget.get(resolved.effort, default_budget) if resolved.effort else default_budget
         return {'type': 'enabled', 'budget_tokens': budget}
@@ -448,7 +448,7 @@ class BedrockConverseModel(Model):
         Nova uses additionalModelRequestFields.reasoningConfig with maxReasoningEffort
         which maps 1:1 to our unified thinking_effort levels.
         """
-        resolved = _resolve_thinking_config(model_settings, self.profile)
+        resolved = resolve_thinking_config(model_settings, self.profile)
         if resolved is None:
             return None
 

@@ -14,4 +14,13 @@
 - Keep provider-specific code in provider modules (e.g., `models/openai.py`) not shared utils — Prevents coupling between providers and maintains clear module boundaries, making code easier to maintain and extend
 - Prefix provider-specific config fields with provider name (e.g., `anthropic_cache_tools`, `openrouter_engine`) — Distinguishes provider-specific settings from generic cross-provider options, preventing configuration ambiguity
 
+## Unified Thinking Settings
+
+When adding or modifying a model that supports thinking/reasoning:
+
+1. **Profile** (`profiles/{provider}.py`): Set `supports_thinking=True`. If thinking can't be disabled (always-on models like o-series, DeepSeek R1), also set `thinking_always_enabled=True`.
+2. **Resolver**: Add a `_resolve_{provider}_thinking()` method that calls `_resolve_thinking_config(settings, self.profile)` and translates to the provider's native format. See existing providers for the pattern.
+3. **OpenAIChatModel subclasses**: If inheriting from `OpenAIChatModel`, strip `openai_reasoning_effort` in `prepare_request()` after calling `super()` — the parent injects it, but your provider has its own mechanism.
+4. **Tests** (`tests/test_unified_thinking.py`): Add tests for `thinking=True`, `thinking=False`, each effort level, silent drop on unsupported models, and provider-specific precedence.
+
 <!-- /braindump -->

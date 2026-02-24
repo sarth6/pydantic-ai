@@ -196,8 +196,8 @@ class OpenRouterReasoning(TypedDict, total=False):
     token limits, but not both simultaneously.
     """
 
-    effort: Literal['high', 'medium', 'low']
-    """OpenAI-style reasoning effort level. Cannot be used with max_tokens."""
+    effort: Literal['high', 'medium', 'low', 'none']
+    """OpenAI-style reasoning effort level. Use 'none' to disable reasoning. Cannot be used with max_tokens."""
 
     max_tokens: int
     """Anthropic-style specific token limit for reasoning. Cannot be used with effort."""
@@ -588,7 +588,7 @@ class OpenRouterModel(OpenAIChatModel):
             return None
 
         if not resolved.enabled:
-            return {'enabled': False}
+            return {'effort': 'none'}
 
         result: OpenRouterReasoning = {}
 

@@ -859,7 +859,7 @@ class TestOpenRouterUnifiedThinking:
         assert result == {'enabled': True}
 
     def test_thinking_false_disables_reasoning(self):
-        """thinking=False → {enabled: False}."""
+        """thinking=False → reasoning.effort: 'none' (OpenRouter's disable mechanism)."""
         model = OpenRouterModel.__new__(OpenRouterModel)
         model._model_name = 'anthropic/claude-sonnet-4-5'
         model._profile = ModelProfile(supports_thinking=True)
@@ -867,7 +867,7 @@ class TestOpenRouterUnifiedThinking:
         settings: OpenRouterModelSettings = {'thinking': False}
         result = model._resolve_openrouter_thinking(settings)
 
-        assert result == {'enabled': False}
+        assert result == {'effort': 'none'}
 
     @pytest.mark.parametrize('effort', ['low', 'medium', 'high'])
     def test_effort_passthrough(self, effort: str):

@@ -175,7 +175,7 @@ def tavily_search_tool(
         )
 
     return Tool[Any](
-        func,
+        func,  # pyright: ignore[reportArgumentType]
         name='tavily_search',
         description='Searches Tavily for the given query and returns the results.',
     )

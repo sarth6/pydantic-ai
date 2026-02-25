@@ -169,6 +169,19 @@ def test_no_params_bound_exposes_all_in_schema(tavily_api_key: str):
     )
 
 
+def test_factory_requires_api_key_or_client():
+    """Test that tavily_search_tool raises when neither api_key nor client is provided."""
+    with pytest.raises(ValueError, match='Either api_key or client must be provided'):
+        tavily_search_tool()  # pyright: ignore[reportCallIssue]
+
+
+def test_factory_with_client():
+    """Test that tavily_search_tool accepts a pre-built client."""
+    client = AsyncTavilyClient('test-key')
+    tool = tavily_search_tool(client=client)
+    assert tool.name == 'tavily_search'
+
+
 def test_bound_params_hidden_from_schema(tavily_api_key: str):
     """Test that factory-provided params are excluded from the tool schema."""
     tool = tavily_search_tool(
